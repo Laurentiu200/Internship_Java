@@ -26,4 +26,10 @@ public class InterviewTypeController {
     public ResponseEntity<HttpStatus> patchInterviewTypes(@RequestBody String name){
         return interviewTypeService.patchInterviewType(name);
     }
+
+    @DeleteMapping("/interview-types")
+    public ResponseEntity<HttpStatus> deleteInterviewType(@RequestParam String name)
+    {
+        return interviewTypeService.deleteInterviewType(name);
+    }
 }
