@@ -17,7 +17,7 @@ public class InterviewType {
     public InterviewType() {
     }
 
-    public InterviewType(String id, String name) {
+    public InterviewType(String name) {
         this.id = id;
         this.name = name;
     }
