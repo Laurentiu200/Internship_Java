@@ -2,7 +2,8 @@ package com.example.internship_java.service;
 
 import com.example.internship_java.model.InterviewType;
 import com.example.internship_java.repository.InterviewTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,21 +24,11 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
     @Override
     public ResponseEntity<HttpStatus> patchInterviewType(String name) {
         try {
-            while (name.charAt(0) != ']') {
-                String nameFormat;
-                System.out.println(name);
-                if (name.indexOf(',') != -1)
-                    nameFormat = name.substring(name.indexOf('"') + 1, name.indexOf(',') - 1);
-                else
-                    nameFormat = name.substring(name.indexOf('"') + 1, name.indexOf(']') - 1);
-                System.out.println(nameFormat);
-                interviewTypeRepository.save(new InterviewType(nameFormat));
-                System.out.println(name);
-                if(name.indexOf(',')!=-1)
-                name = name.substring(name.indexOf(',') + 1);
-                else
-                    name = name.substring(name.indexOf(']'));
-            }
+
+            JsonArray convertedObject = new Gson().fromJson(name, JsonArray.class);
+            Gson gson = new Gson();
+            String[] interviewTypes = gson.fromJson(convertedObject , String[].class);
+            for (String interviewType : interviewTypes) interviewTypeRepository.save(new InterviewType(interviewType));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
