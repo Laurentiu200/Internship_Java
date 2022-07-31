@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class InterviewTypeServiceImpl implements InterviewTypeService {
@@ -36,8 +34,12 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
             }
             JsonArray convertedObject = new Gson().fromJson(name, JsonArray.class);
             Gson gson = new Gson();
-            String[] interviewTypes = gson.fromJson(convertedObject, String[].class);
-            for (String interviewType : interviewTypes) interviewTypeRepository.save(new InterviewType(interviewType));
+            String[] newInterviewTypes = gson.fromJson(convertedObject, String[].class);
+            List<InterviewType> interviewTypeList = interviewTypeRepository.findAll();
+            Set<InterviewType> interviewTypeSet = new HashSet<>(interviewTypeList);
+
+            for (String interviewType : newInterviewTypes) interviewTypeSet.add(new InterviewType(interviewType));
+            interviewTypeRepository.saveAll(interviewTypeSet);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");
