@@ -16,6 +16,16 @@ public class Interview {
     private String organizerId;
     private TimeZone timezone = TimeZone.getTimeZone(location);
 
+    public Interview(Candidate candidate, String location, String organizerId, TimeZone timezone) {
+        this.candidate = candidate;
+        this.location = location;
+        this.organizerId = organizerId;
+        this.timezone = timezone;
+    }
+
+    public Interview() {
+    }
+
     public Candidate getCandidate() {
         return candidate;
     }

@@ -10,7 +10,21 @@ public class Candidate {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+    private enum AttendeStatusValue {
+        accepted,
+        declined,
+        pnding,
+        tentative
+    };
+
     private AttendeStatusValue status;
+
+    public Candidate() {
+    }
+
+    public Candidate(AttendeStatusValue status) {
+        this.status = status;
+    }
 
     public void setId(String id) {
         this.id = id;

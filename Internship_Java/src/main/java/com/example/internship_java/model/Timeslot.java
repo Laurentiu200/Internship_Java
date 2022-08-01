@@ -17,6 +17,17 @@ public class Timeslot {
     private String endOn;
     private Interviewer[] interviewers = new Interviewer[50];
 
+    public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endOn, Interviewer[] interviewers) {
+        this.interviewType = interviewType;
+        this.title = title;
+        this.place = place;
+        this.startsOn = startsOn;
+        this.endOn = endOn;
+        this.interviewers = interviewers;
+    }
+
+    public Timeslot(){}
+
     public String getId() {
         return id;
     }
