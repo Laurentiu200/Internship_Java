@@ -4,6 +4,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 
 public class Interview {
@@ -12,15 +14,25 @@ public class Interview {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
     private Candidate candidate;
-    private String location = "Romania";
+    private String jobId;
     private String organizerId;
-    private TimeZone timezone = TimeZone.getTimeZone(location);
+    private String location;
+    private TimeZone timezone;
+    private List<Timeslot> timeSlots = new ArrayList<>(50);
+    private String createdOn;
+    private String refUrl;
+    private String source;
 
-    public Interview(Candidate candidate, String location, String organizerId, TimeZone timezone) {
+    public Interview(Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeSlots, String createdOn, String refUrl, String source) {
         this.candidate = candidate;
-        this.location = location;
+        this.jobId = jobId;
         this.organizerId = organizerId;
+        this.location = location;
         this.timezone = timezone;
+        this.timeSlots = timeSlots;
+        this.createdOn = createdOn;
+        this.refUrl = refUrl;
+        this.source = source;
     }
 
     public Interview() {
@@ -60,5 +72,49 @@ public class Interview {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public List<Timeslot> getTimeSlots() {
+        return timeSlots;
+    }
+
+    public void setTimeSlots(List<Timeslot> timeSlots) {
+        this.timeSlots = timeSlots;
+    }
+
+    public String getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(String createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public String getRefUrl() {
+        return refUrl;
+    }
+
+    public void setRefUrl(String refUrl) {
+        this.refUrl = refUrl;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }
