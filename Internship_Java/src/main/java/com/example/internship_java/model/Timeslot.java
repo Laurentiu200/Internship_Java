@@ -4,6 +4,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Timeslot {
     @Id
@@ -15,9 +17,9 @@ public class Timeslot {
     private String place;
     private String startsOn;
     private String endOn;
-    private Interviewer[] interviewers = new Interviewer[50];
+    private List<Interviewer> interviewers = new ArrayList<>(50);
 
-    public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endOn, Interviewer[] interviewers) {
+    public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endOn, List<Interviewer> interviewers) {
         this.interviewType = interviewType;
         this.title = title;
         this.place = place;
@@ -36,11 +38,11 @@ public class Timeslot {
         return interviewType;
     }
 
-    public Interviewer[] getInterviewers() {
+    public List<Interviewer> getInterviewers() {
         return interviewers;
     }
 
-    public void setInterviewers(Interviewer[] interviewers) {
+    public void setInterviewers(List<Interviewer> interviewers) {
         this.interviewers = interviewers;
     }
 

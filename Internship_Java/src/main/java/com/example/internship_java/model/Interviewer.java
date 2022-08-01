@@ -10,9 +10,15 @@ public class Interviewer {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-
-
     AttendeeStatusValue status;
+
+    public Interviewer() {
+    }
+
+    public Interviewer(String id, AttendeeStatusValue status) {
+        this.id = id;
+        this.status = status;
+    }
 
     public AttendeeStatusValue getStatus() {
         return status;
@@ -25,4 +31,9 @@ public class Interviewer {
     public String getId() {
         return id;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }
