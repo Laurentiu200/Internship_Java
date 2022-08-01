@@ -10,19 +10,13 @@ public class Candidate {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-    private enum AttendeStatusValue {
-        accepted,
-        declined,
-        pnding,
-        tentative
-    };
 
-    private AttendeStatusValue status;
+    private AttendeeStatusValue status;
 
     public Candidate() {
     }
 
-    public Candidate(AttendeStatusValue status) {
+    public Candidate(AttendeeStatusValue status) {
         this.status = status;
     }
 
@@ -30,11 +24,11 @@ public class Candidate {
         this.id = id;
     }
 
-    public AttendeStatusValue getStatus() {
+    public AttendeeStatusValue getStatus() {
         return status;
     }
 
-    public void setStatus(AttendeStatusValue status) {
+    public void setStatus(AttendeeStatusValue status) {
         this.status = status;
     }
 
