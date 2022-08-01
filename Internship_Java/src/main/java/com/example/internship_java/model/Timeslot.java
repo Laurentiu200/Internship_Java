@@ -2,29 +2,42 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name="timeslot")
 public class Timeslot {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+    @OneToOne
     private InterviewType interviewType;
     private String title;
     private String place;
     private String startsOn;
-    private String endOn;
+    private String endsOn;
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
-    public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endOn, List<Interviewer> interviewers) {
+    public Timeslot(String id, InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {
+        this.id=id;
         this.interviewType = interviewType;
         this.title = title;
         this.place = place;
         this.startsOn = startsOn;
-        this.endOn = endOn;
+        this.endsOn = endsOn;
+        this.interviewers = interviewers;
+    }
+
+    public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {
+        this.interviewType = interviewType;
+        this.title = title;
+        this.place = place;
+        this.startsOn = startsOn;
+        this.endsOn = endsOn;
         this.interviewers = interviewers;
     }
 
@@ -78,11 +91,11 @@ public class Timeslot {
         this.startsOn = startsOn;
     }
 
-    public String getEndOn() {
-        return endOn;
+    public String getEndsOn() {
+        return endsOn;
     }
 
-    public void setEndOn(String endOn) {
-        this.endOn = endOn;
+    public void setEndsOn(String endOn) {
+        this.endsOn = endOn;
     }
 }

@@ -2,34 +2,35 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+@Entity
 public class Interview {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+    @OneToOne
     private Candidate candidate;
     private String jobId;
     private String organizerId;
     private String location;
     private TimeZone timezone;
-    private List<Timeslot> timeSlots = new ArrayList<>(50);
+    @OneToMany
+    private List<Timeslot> timeslots = new ArrayList<>(50);
     private String createdOn;
     private String refUrl;
     private String source;
 
-    public Interview(Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeSlots, String createdOn, String refUrl, String source) {
+    public Interview(String id, Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeslots, String createdOn, String refUrl, String source) {
+        this.id=id;
         this.candidate = candidate;
         this.jobId = jobId;
         this.organizerId = organizerId;
         this.location = location;
         this.timezone = timezone;
-        this.timeSlots = timeSlots;
+        this.timeslots = timeslots;
         this.createdOn = createdOn;
         this.refUrl = refUrl;
         this.source = source;
@@ -86,12 +87,12 @@ public class Interview {
         this.jobId = jobId;
     }
 
-    public List<Timeslot> getTimeSlots() {
-        return timeSlots;
+    public List<Timeslot> getTimeslots() {
+        return timeslots;
     }
 
-    public void setTimeSlots(List<Timeslot> timeSlots) {
-        this.timeSlots = timeSlots;
+    public void setTimeslots(List<Timeslot> timeSlots) {
+        this.timeslots = timeSlots;
     }
 
     public String getCreatedOn() {
