@@ -2,9 +2,13 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "candidate")
 public class Candidate {
     @Id
     @GeneratedValue(generator = "system-uuid")

@@ -1,15 +1,22 @@
 package com.example.internship_java.model;
 
+import com.google.gson.annotations.SerializedName;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="interviewer")
 public class Interviewer {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @SerializedName("id")
     private String id;
+    @SerializedName("status")
     AttendeeStatusValue status;
 
     public Interviewer() {

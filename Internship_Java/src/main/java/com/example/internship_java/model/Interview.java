@@ -2,22 +2,24 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+@Entity
 public class Interview {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+    @OneToOne
     private Candidate candidate;
     private String jobId;
     private String organizerId;
     private String location;
     private TimeZone timezone;
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Timeslot> timeSlots = new ArrayList<>(50);
     private String createdOn;
     private String refUrl;

@@ -1,10 +1,10 @@
 package com.example.internship_java.repository;
 
-import com.example.internship_java.model.Interview;
+import com.example.internship_java.model.Timeslot;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface InterviewsInterface extends JpaRepository<Interview, Object> {
+public interface TimeslotRepository extends JpaRepository<Timeslot, Object> {
     @Query
-    public Interview findById(String id);
+    public Timeslot findById(String id);
 }
