@@ -10,20 +10,15 @@ public class Interviewer {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-    private enum AttendeStatusValue {
-        accepted,
-        declined,
-        pnding,
-        tentative
-    };
 
-    AttendeStatusValue status;
 
-    public AttendeStatusValue getStatus() {
+    AttendeeStatusValue status;
+
+    public AttendeeStatusValue getStatus() {
         return status;
     }
 
-    public void setStatus(AttendeStatusValue status) {
+    public void setStatus(AttendeeStatusValue status) {
         this.status = status;
     }
 
