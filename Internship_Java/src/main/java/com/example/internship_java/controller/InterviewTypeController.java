@@ -33,4 +33,5 @@ public class InterviewTypeController {
     public ResponseEntity<Collection<Error>> deleteInterviewType(@RequestParam String name) {
         return interviewTypeService.deleteInterviewType(name);
     }
+
 }
