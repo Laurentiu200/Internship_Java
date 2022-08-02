@@ -2,9 +2,10 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
+@Entity
 public class Candidate {
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -12,16 +13,19 @@ public class Candidate {
     private String id;
 
     private AttendeeStatusValue status;
-
     public Candidate() {
     }
 
-    public Candidate(AttendeeStatusValue status) {
+    public Candidate(String string, AttendeeStatusValue status) {
         this.status = status;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public AttendeeStatusValue getStatus() {

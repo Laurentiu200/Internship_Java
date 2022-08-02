@@ -2,21 +2,25 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
+@Entity
+@Table(name = "TimeSlots")
 public class Timeslot {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+    @OneToOne(targetEntity = InterviewType.class)
     private InterviewType interviewType;
     private String title;
     private String place;
     private String startsOn;
     private String endOn;
+
+    @OneToMany(targetEntity = Interviewer.class,  cascade = CascadeType.ALL)
+    @JoinColumn(name="cp_fk",  referencedColumnName = "id")
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
     public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endOn, List<Interviewer> interviewers) {
@@ -84,5 +88,20 @@ public class Timeslot {
 
     public void setEndOn(String endOn) {
         this.endOn = endOn;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Timeslot{" +
+                "id='" + id + '\'' +
+                ", interviewType=" + interviewType +
+                ", title='" + title + '\'' +
+                ", place='" + place + '\'' +
+                ", startsOn='" + startsOn + '\'' +
+                ", endOn='" + endOn + '\'' +
+                ", interviewers=" + interviewers +
+                '}';
     }
 }

@@ -2,26 +2,36 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-
+@Entity
+@Table(name = "Interviews")
 public class Interview {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+    @OneToOne(targetEntity = Candidate.class,  cascade = CascadeType.ALL)
+    @JoinColumn(name="id",  referencedColumnName = "id")
     private Candidate candidate;
     private String jobId;
+    @Column
     private String organizerId;
+    @Column
     private String location;
+    @Column
     private TimeZone timezone;
-    private List<Timeslot> timeSlots = new ArrayList<>(50);
+
+    @OneToMany(targetEntity = Timeslot.class,  cascade = CascadeType.ALL)
+    @JoinColumn(name="id",  referencedColumnName = "id")
+    private List<Timeslot> timeslots = new ArrayList<>(50);
     private String createdOn;
     private String refUrl;
     private String source;
+
+
 
     public Interview(Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeSlots, String createdOn, String refUrl, String source) {
         this.candidate = candidate;
@@ -29,14 +39,17 @@ public class Interview {
         this.organizerId = organizerId;
         this.location = location;
         this.timezone = timezone;
-        this.timeSlots = timeSlots;
+        this.timeslots = timeSlots;
         this.createdOn = createdOn;
         this.refUrl = refUrl;
         this.source = source;
+
     }
 
     public Interview() {
+
     }
+
 
     public Candidate getCandidate() {
         return candidate;
@@ -87,11 +100,11 @@ public class Interview {
     }
 
     public List<Timeslot> getTimeSlots() {
-        return timeSlots;
+        return timeslots;
     }
 
     public void setTimeSlots(List<Timeslot> timeSlots) {
-        this.timeSlots = timeSlots;
+        this.timeslots = timeSlots;
     }
 
     public String getCreatedOn() {
@@ -117,4 +130,21 @@ public class Interview {
     public void setSource(String source) {
         this.source = source;
     }
+
+    @Override
+    public String toString() {
+        return "Interview{" +
+                "id='" + id + '\'' +
+                ", candidate=" + candidate +
+                ", jobId='" + jobId + '\'' +
+                ", organizerId='" + organizerId + '\'' +
+                ", location='" + location + '\'' +
+                ", timezone=" + timezone +
+                ", timeSlots=" + timeslots +
+                ", createdOn='" + createdOn + '\'' +
+                ", refUrl='" + refUrl + '\'' +
+                ", source='" + source + '\'' +
+                '}';
+    }
+
 }

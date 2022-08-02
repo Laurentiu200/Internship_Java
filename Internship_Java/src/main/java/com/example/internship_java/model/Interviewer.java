@@ -2,9 +2,11 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+@Entity
 public class Interviewer {
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -36,4 +38,11 @@ public class Interviewer {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "Interviewer{" +
+                "id='" + id + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
