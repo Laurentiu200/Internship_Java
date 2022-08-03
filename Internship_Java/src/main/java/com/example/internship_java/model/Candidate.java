@@ -2,13 +2,15 @@ package com.example.internship_java.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "candidate")
 public class Candidate {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
 
     private AttendeeStatusValue status;
@@ -16,12 +18,17 @@ public class Candidate {
     public Candidate() {
     }
 
-    public Candidate(AttendeeStatusValue status) {
+    public Candidate(String id, AttendeeStatusValue status) {
+        this.id=id;
         this.status = status;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getId(){
+        return this.id;
     }
 
     public AttendeeStatusValue getStatus() {
