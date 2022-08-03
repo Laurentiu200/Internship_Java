@@ -19,23 +19,23 @@ public class TimeslotsController {
         this.timeslotsService = timeslotsService;
     }
 
-    @PatchMapping(value = "/interviews/timeslots",consumes = "application/json")
-    public ResponseEntity<Collection<Error>> patchInterviewTypes(@RequestParam String interviewId, @RequestParam String timeslotId, @RequestBody Timeslot updateData) {
+    @PatchMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}",consumes = "application/json")
+    public ResponseEntity<Collection<Error>> patchInterviewTypes(@PathVariable String interviewId, @PathVariable String timeslotId, @RequestBody Timeslot updateData) {
         return timeslotsService.updateTimeslot(interviewId, timeslotId, updateData);
     }
 
-    @GetMapping(value = "/interviews/timeslots")
-    public ResponseEntity<Timeslot> getTimeslot(@RequestParam String interviewId, @RequestParam String timeslotId){
+    @GetMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}")
+    public ResponseEntity<Timeslot> getTimeslot(@PathVariable String interviewId, @PathVariable  String timeslotId){
         return timeslotsService.getTimeslot(interviewId,timeslotId);
     }
 
-    @PostMapping(value = "/interviews/timeslots",consumes = "application/json")
-    public ResponseEntity<Collection<Error>> addTimeslot(@RequestParam String interviewId, @RequestBody Timeslot timeslotToAdd){
+    @PostMapping(value = "/interviews/{interviewId}/timeslots",consumes = "application/json")
+    public ResponseEntity<Collection<Error>> addTimeslot(@PathVariable String interviewId, @RequestBody Timeslot timeslotToAdd){
         return timeslotsService.addTimeslot(interviewId,timeslotToAdd);
     }
 
-    @DeleteMapping(value = "/interviews/timeslots")
-    public ResponseEntity<Collection<Error>> deleteTimeslot(@RequestParam String interviewId, @RequestParam String timeslotId){
+    @DeleteMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}")
+    public ResponseEntity<Collection<Error>> deleteTimeslot(@PathVariable String interviewId, @PathVariable String timeslotId){
         return timeslotsService.deleteTimeslot(interviewId, timeslotId);
     }
 }
