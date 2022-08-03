@@ -12,12 +12,15 @@ public class Interview {
     @Id
     private String id;
     @OneToOne
+    @JoinColumn(name = "fk_candidate_id")
     private Candidate candidate;
     private String jobId;
     private String organizerId;
     private String location;
     private TimeZone timezone;
-    @OneToMany
+
+    @ManyToMany
+    @JoinColumn(name = "fk_timeslots_id")
     private List<Timeslot> timeslots = new ArrayList<>(50);
     private String createdOn;
     private String refUrl;

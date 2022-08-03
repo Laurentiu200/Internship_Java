@@ -10,16 +10,17 @@ import java.util.List;
 @Table(name="timeslot")
 public class Timeslot {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
+
     @OneToOne
+    @JoinColumn(name = "fk_interviu_type_id")
     private InterviewType interviewType;
     private String title;
     private String place;
     private String startsOn;
     private String endsOn;
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_inteerviewers_id")
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
     public Timeslot(String id, InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {

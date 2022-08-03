@@ -36,14 +36,22 @@ public class InterviewsController {
     }
     @PostMapping(value = "/interviews",consumes = "application/json")
     public ResponseEntity<Collection<Error>> addTimeslot( @RequestBody Interview interviewToAdd){
-        Candidate candidate = interviewToAdd.getCandidate();
-        candidateRepository.save(candidate);
-        for(Timeslot e: interviewToAdd.getTimeslots()) {
-            interviewerRepository.saveAll(e.getInterviewers());
-            interviewTypeRepository.save(e.getInterviewType());
-        }
-        timeslotRepository.saveAll(interviewToAdd.getTimeslots());
-        interviewsInterface.save(interviewToAdd);
+
+
+            Candidate candidate = interviewToAdd.getCandidate();
+            candidateRepository.save(candidate);
+            for (Timeslot e : interviewToAdd.getTimeslots()) {
+                interviewerRepository.saveAll(e.getInterviewers());
+                interviewTypeRepository.save(e.getInterviewType());
+            }
+            timeslotRepository.saveAll(interviewToAdd.getTimeslots());
+
+
+        if(interviewsInterface.findById(interviewToAdd.getId()) ==  null)
+            interviewsInterface.save(interviewToAdd);
+        else
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
