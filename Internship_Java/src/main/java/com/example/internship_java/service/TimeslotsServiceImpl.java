@@ -40,7 +40,7 @@ public class TimeslotsServiceImpl implements TimeslotsService{
 
     @Override
     public ResponseEntity<Collection<Error>> addTimeslot(String interviewId, Timeslot timeslotToAdd) {
-        try {
+      /*  try {
             Interview interview = interviewsInterface.findById(interviewId);
             List<Timeslot> timeslots = interview.getTimeslots();
             if(timeslots.size()>49){
@@ -67,12 +67,13 @@ public class TimeslotsServiceImpl implements TimeslotsService{
         catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        }*/
+        return null;
     }
 
     @Override
     public ResponseEntity<Collection<Error>> deleteTimeslot(String interviewId, String timeslotId) {
-        try {
+      /*  try {
             Interview interview = interviewsInterface.findById(interviewId);
             List<Timeslot> timeslotList= interview.getTimeslots();
             if(timeslotList.size()==1) {
@@ -105,12 +106,13 @@ public class TimeslotsServiceImpl implements TimeslotsService{
         }
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        }*/
+        return null;
     }
 
     @Override
     public ResponseEntity<Timeslot> getTimeslot(String interviewId, String timeslotId) {
-        try {
+       /* try {
             Interview interview = interviewsInterface.findById(interviewId);
             List<Timeslot> timeslotList = interview.getTimeslots();
             for(Timeslot e: timeslotList)
@@ -124,11 +126,14 @@ public class TimeslotsServiceImpl implements TimeslotsService{
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        */
+        return null;
+
     }
 
     @Override
     public ResponseEntity<Collection<Error>> updateTimeslot(String interviewId, String timeslotId, Timeslot updatedTimeslot) {
-        try {
+       /* try {
             Interview interview = interviewsInterface.findById(interviewId);
             List<Timeslot> timeslotList = interview.getTimeslots();
             int found=0;
@@ -159,6 +164,9 @@ public class TimeslotsServiceImpl implements TimeslotsService{
         }
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        }        return null;*/
+
+        return null;
     }
+
 }
