@@ -1,7 +1,33 @@
 package com.example.internship_java.controller;
 
-import org.springframework.stereotype.Controller;
+import com.example.internship_java.service.StatusServiceImpl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@CrossOrigin(origins = "http://localhost:8080")
+@RestController
+@RequestMapping("/api")
 public class StatusController {
+    final
+    StatusServiceImpl statusService;
+
+    public StatusController(StatusServiceImpl statusService) {
+        this.statusService = statusService;
+    }
+
+    @PutMapping(value = "/interviews/{interviewId}/candidate/status")
+    ResponseEntity<Object> putCandidateStatus
+            (@PathVariable String interviewId,
+             @RequestBody String statusValue) {
+        return statusService.updateCandidateStatus(interviewId, statusValue);
+    }
+
+    @PutMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}/interviewers/{userId}/status")
+    ResponseEntity<Object> putInterviewerStatus
+            (@PathVariable String interviewId,
+             @PathVariable String timeslotId,
+             @PathVariable String userId,
+             @RequestBody String statusValue) {
+        return statusService.updateInterviewerStatus(interviewId, timeslotId, userId, statusValue);
+    }
 }

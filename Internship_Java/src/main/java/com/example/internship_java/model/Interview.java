@@ -1,7 +1,5 @@
 package com.example.internship_java.model;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,7 @@ public class Interview {
     private String location;
     private TimeZone timezone;
 
-    @ManyToMany
+    @OneToMany
     @JoinColumn(name = "fk_timeslots_id")
     private List<Timeslot> timeslots = new ArrayList<>(50);
     private String createdOn;
@@ -27,7 +25,7 @@ public class Interview {
     private String source;
 
     public Interview(String id, Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeslots, String createdOn, String refUrl, String source) {
-        this.id=id;
+        this.id = id;
         this.candidate = candidate;
         this.jobId = jobId;
         this.organizerId = organizerId;
