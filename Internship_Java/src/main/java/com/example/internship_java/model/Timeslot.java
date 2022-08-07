@@ -19,8 +19,8 @@ public class Timeslot {
     private String place;
     private String startsOn;
     private String endsOn;
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_inteerviewers_id")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_interviewers_id")
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
     public Timeslot(String id, InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {

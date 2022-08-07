@@ -19,7 +19,7 @@ public class Interview {
     private String location;
     private TimeZone timezone;
 
-    @ManyToMany
+    @OneToMany
     @JoinColumn(name = "fk_timeslots_id")
     private List<Timeslot> timeslots = new ArrayList<>(50);
     private String createdOn;
