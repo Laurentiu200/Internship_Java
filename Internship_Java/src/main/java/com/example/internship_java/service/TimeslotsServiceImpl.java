@@ -4,169 +4,197 @@ import com.example.internship_java.model.*;
 import com.example.internship_java.model.Error;
 import com.example.internship_java.repository.InterviewTypeRepository;
 import com.example.internship_java.repository.InterviewerRepository;
-import com.example.internship_java.repository.InterviewsInterface;
+import com.example.internship_java.repository.InterviewRepository;
 import com.example.internship_java.repository.TimeslotRepository;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class TimeslotsServiceImpl implements TimeslotsService{
+public class TimeslotsServiceImpl implements TimeslotsService {
     final
-    InterviewsInterface interviewsInterface;
+    InterviewRepository interviewRepository;
     final
     TimeslotRepository timeslotRepository;
-
     final
     InterviewerRepository interviewerRepository;
     final
     InterviewTypeRepository interviewTypeRepository;
-    public TimeslotsServiceImpl(InterviewsInterface interviewsInterface, TimeslotRepository timeslotRepository, InterviewerRepository interviewerRepository, InterviewTypeRepository interviewTypeRepository) {
-        this.interviewsInterface = interviewsInterface;
+
+    public TimeslotsServiceImpl(InterviewRepository interviewRepository, TimeslotRepository timeslotRepository, InterviewerRepository interviewerRepository, InterviewTypeRepository interviewTypeRepository) {
+        this.interviewRepository = interviewRepository;
         this.timeslotRepository = timeslotRepository;
         this.interviewerRepository = interviewerRepository;
         this.interviewTypeRepository = interviewTypeRepository;
     }
-
     @Override
-    public ResponseEntity<Collection<Error>> addTimeslot(String interviewId, Timeslot timeslotToAdd) {
-      /*  try {
-            Interview interview = interviewsInterface.findById(interviewId);
-            List<Timeslot> timeslots = interview.getTimeslots();
-            if(timeslots.size()>49){
-                Error error = new Error("409", "TIMESLOTS_SIZE_EXCEEDED");
+    public ResponseEntity<Object> addTimeslot(String interviewId, Timeslot timeslotToAdd) {
+        try {
+            Optional<Interview> interviewOptional = interviewRepository.findById(interviewId);
+            if (interviewOptional.isPresent()) {
+                List<Timeslot> timeslots = interviewOptional.get().getTimeslots();
+                if (timeslots.size() > 49) {
+                    Error error = new Error("409", "TIMESLOTS_SIZE_EXCEEDED");
+                    List<Error> errors = new ArrayList<>();
+                    errors.add(error);
+                    return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+                }
+                interviewerRepository.saveAll(timeslotToAdd.getInterviewers());
+                if (interviewTypeRepository.findByName(timeslotToAdd.getInterviewType().getName()) != null) {
+                    timeslotToAdd
+                            .getInterviewType()
+                            .setId(interviewTypeRepository
+                                    .findByName(timeslotToAdd.getInterviewType().getName()).getId());
+                }
+                interviewTypeRepository.save(timeslotToAdd.getInterviewType());
+                timeslots.add(timeslotToAdd);
+                timeslotRepository.save(timeslotToAdd);
+                interviewOptional.get().setTimeslots(timeslots);
+                interviewRepository.save(interviewOptional.get());
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
             }
-            System.out.println("Da");
-            interviewerRepository.saveAll(timeslotToAdd.getInterviewers());
-            interviewTypeRepository.save(timeslotToAdd.getInterviewType());
-            timeslots.add(timeslotToAdd);
-            timeslotRepository.save(timeslotToAdd);
-            interview.setTimeslots(timeslots);
-            interviewsInterface.save(interview);
-            return new ResponseEntity<>( HttpStatus.OK);
-        }
-        catch(NullPointerException e){
-            Error error = new Error("404", "INTERVIEW_NOT_FOUND");
-            List<Error> errors = new ArrayList<>();
-            errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-        }
-        catch (Exception e) {
-            System.out.println(e);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }*/
-        return null;
+        }
     }
 
     @Override
-    public ResponseEntity<Collection<Error>> deleteTimeslot(String interviewId, String timeslotId) {
-      /*  try {
-            Interview interview = interviewsInterface.findById(interviewId);
-            List<Timeslot> timeslotList= interview.getTimeslots();
-            if(timeslotList.size()==1) {
-                Error error = new Error("409", "CANNOT_DELETE_LAST_TIMESLOT");
+    public ResponseEntity<Object> deleteTimeslot(String interviewId, String timeslotId) {
+        try {
+            Optional<Interview> interviewOptional = interviewRepository.findById(interviewId);
+            if (interviewOptional.isPresent()) {
+                List<Timeslot> timeslotList = interviewOptional.get().getTimeslots();
+                if (timeslotList.size() == 1) {
+                    Error error = new Error("409", "CANNOT_DELETE_LAST_TIMESLOT");
+                    List<Error> errors = new ArrayList<>();
+                    errors.add(error);
+                    return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+                }
+                int found = 0;
+                for (Timeslot e : timeslotList) {
+                    if (e.getId().equals(timeslotId)) {
+                        interviewerRepository.deleteAll(e.getInterviewers());
+                        timeslotList.remove(e);
+                        timeslotRepository.delete(e);
+                        interviewTypeRepository.delete(e.getInterviewType());
+                        found = 1;
+                        break;
+                    }
+                }
+                if (found == 0) {
+                    Error error = new Error("404", "TIMESLOT_NOT_FOUND");
+                    List<Error> errors = new ArrayList<>();
+                    errors.add(error);
+                    return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                }
+                interviewRepository.save(interviewOptional.get());
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
             }
-            int found=0;
-            for(Timeslot e: timeslotList)
-                if(e.getId().equals(timeslotId)) {
-                    timeslotList.remove(e);
-                    found=1;
-                    break;
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Object> getTimeslot(String interviewId, String timeslotId) {
+        try {
+            Optional<Interview> interviewOptional = interviewRepository.findById(interviewId);
+            if (interviewOptional.isPresent()) {
+                List<Timeslot> timeslotList = interviewOptional.get().getTimeslots();
+                for (Timeslot e : timeslotList) {
+                    if (e.getId().equals(timeslotId)) {
+                        return new ResponseEntity<>(e, HttpStatus.OK);
+                    }
                 }
-            if(found==0){
                 Error error = new Error("404", "TIMESLOT_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-            }
-            interviewsInterface.save(interview);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        catch(NullPointerException e){
-            Error error = new Error("404", "INTERVIEW_NOT_FOUND");
-            List<Error> errors = new ArrayList<>();
-            errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-        }
-        catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }*/
-        return null;
-    }
+                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
 
-    @Override
-    public ResponseEntity<Timeslot> getTimeslot(String interviewId, String timeslotId) {
-       /* try {
-            Interview interview = interviewsInterface.findById(interviewId);
-            List<Timeslot> timeslotList = interview.getTimeslots();
-            for(Timeslot e: timeslotList)
-                if(e.getId().equals(timeslotId))
-                    return new ResponseEntity<>(e, HttpStatus.NO_CONTENT);
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        catch(NullPointerException e){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        */
-        return null;
-
-    }
-
-    @Override
-    public ResponseEntity<Collection<Error>> updateTimeslot(String interviewId, String timeslotId, Timeslot updatedTimeslot) {
-       /* try {
-            Interview interview = interviewsInterface.findById(interviewId);
-            List<Timeslot> timeslotList = interview.getTimeslots();
-            int found=0;
-            for(Timeslot e: timeslotList)
-                if(e.getId().equals(timeslotId)) {
-                    timeslotList.remove(e);
-                    found=1;
-                    break;
-                }
-            if(found==0){
-                Error error = new Error("404", "TIMESLOT_NOT_FOUND");
+            } else {
+                Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
             }
-            updatedTimeslot.setId(timeslotId);
-            timeslotList.add(updatedTimeslot);
-            timeslotRepository.save(updatedTimeslot);
-            interview.setTimeslots(timeslotList);
-            interviewsInterface.save(interview);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        catch (NullPointerException e) {
-            Error error = new Error("404", "INTERVIEW_NOT_FOUND");
-            List<Error> errors = new ArrayList<>();
-            errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }        return null;*/
-
-        return null;
+        }
     }
 
+    @Override
+    public ResponseEntity<Object> updateTimeslot(String interviewId, String timeslotId, Timeslot updatedTimeslot) {
+        try {
+            Optional<Interview> interviewOptional = interviewRepository.findById(interviewId);
+            if (interviewOptional.isPresent()) {
+                if (updatedTimeslot.getStartsOn().compareTo(updatedTimeslot.getEndsOn()) > 0) {
+                    Error error = new Error("422", "END_DATE_BEFORE_START_DATE");
+                    List<Error> errors = new ArrayList<>();
+                    errors.add(error);
+                    return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+                List<Timeslot> timeslotList = interviewOptional.get().getTimeslots();
+                int found = 0;
+                for (Timeslot e : timeslotList) {
+                    if (e.getId().equals(timeslotId)) {
+                        timeslotList.remove(e);
+                        found = 1;
+                        break;
+                    }
+                }
+                if (found == 0) {
+                    Error error = new Error("404", "TIMESLOT_NOT_FOUND");
+                    List<Error> errors = new ArrayList<>();
+                    errors.add(error);
+                    return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                }
+                for (Interviewer interviewer : updatedTimeslot.getInterviewers()) {
+                    if (interviewerRepository.findById(interviewer.getId()).isEmpty()) {
+                        Error error = new Error("422", "NON_EXISTING_INTERVIEWERS");
+                        List<Error> errors = new ArrayList<>();
+                        errors.add(error);
+                        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                    }
+                }
+                updatedTimeslot.setId(timeslotId);
+                timeslotList.add(updatedTimeslot);
+                if (interviewTypeRepository.findByName(updatedTimeslot.getInterviewType().getName()) == null) {
+                    interviewTypeRepository.save(updatedTimeslot.getInterviewType());
+                } else {
+                    updatedTimeslot
+                            .getInterviewType()
+                            .setId(interviewTypeRepository
+                                    .findByName(updatedTimeslot.getInterviewType().getName()).getId());
+                    interviewTypeRepository.save(updatedTimeslot.getInterviewType());
+                }
+                interviewerRepository.saveAll(updatedTimeslot.getInterviewers());
+                timeslotRepository.save(updatedTimeslot);
+                interviewOptional.get().setTimeslots(timeslotList);
+                interviewRepository.save(interviewOptional.get());
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                Error error = new Error("404", "INTERVIEW_NOT_FOUND");
+                List<Error> errors = new ArrayList<>();
+                errors.add(error);
+                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

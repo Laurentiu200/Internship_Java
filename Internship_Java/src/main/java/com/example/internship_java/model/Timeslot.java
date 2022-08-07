@@ -1,13 +1,12 @@
 package com.example.internship_java.model;
 
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="timeslot")
+@Table(name = "timeslot")
 public class Timeslot {
     @Id
     private String id;
@@ -24,7 +23,7 @@ public class Timeslot {
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
     public Timeslot(String id, InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {
-        this.id=id;
+        this.id = id;
         this.interviewType = interviewType;
         this.title = title;
         this.place = place;
@@ -42,7 +41,8 @@ public class Timeslot {
         this.interviewers = interviewers;
     }
 
-    public Timeslot(){}
+    public Timeslot() {
+    }
 
     public String getId() {
         return id;

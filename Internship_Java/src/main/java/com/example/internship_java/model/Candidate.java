@@ -1,9 +1,6 @@
 package com.example.internship_java.model;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -19,7 +16,7 @@ public class Candidate {
     }
 
     public Candidate(String id, AttendeeStatusValue status) {
-        this.id=id;
+        this.id = id;
         this.status = status;
     }
 
@@ -27,7 +24,7 @@ public class Candidate {
         this.id = id;
     }
 
-    public String getId(){
+    public String getId() {
         return this.id;
     }
 

@@ -1,15 +1,11 @@
 package com.example.internship_java.model;
 
-import com.google.gson.annotations.SerializedName;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="interviewer")
+@Table(name = "interviewer")
 public class Interviewer {
     @Id
     private String id;
