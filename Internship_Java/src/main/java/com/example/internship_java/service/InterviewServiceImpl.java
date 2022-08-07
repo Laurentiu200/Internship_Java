@@ -75,7 +75,7 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @PostMapping
-    public ResponseEntity putInterview(Interview interview) {
+    public ResponseEntity<Object> putInterview(Interview interview) {
         try {
             if (interviewsInterface.findById(interview.getId()).isPresent()) {
                 Error error = new Error("403", "INTERVIEW ALREADY EXIST");
@@ -83,13 +83,7 @@ public class InterviewServiceImpl implements InterviewService {
                 errors.add(error);
                 return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
             }
-            if(!validTimeZone(interview.getTimezone().getID()))
-            {
-                Error error = new Error("400", "INVALID TIMEZONE");
-                List<Error> errors = new ArrayList<>();
-                errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-            }
+
             if(interview.getOrganizerId() == null) {
                 Error error = new Error("422", "ORGANIZER ID NOTFOUND");
                 List<Error> errors = new ArrayList<>();
@@ -102,7 +96,14 @@ public class InterviewServiceImpl implements InterviewService {
                 for(Timeslot e : timeslots)
                 {
                     if(e.getInterviewers().isEmpty()) {
-                        Error error = new Error("422", "INTERVIEWERS NOT  SET");
+                        Error error = new Error("422", "INTERVIEWERS NOT SET");
+                        List<Error> errors = new ArrayList<>();
+                        errors.add(error);
+                        return new ResponseEntity<>(errors, HttpStatus.NOT_ACCEPTABLE);
+                    }
+                    if(e.getStartsOn().compareTo(e.getEndsOn()) > 0)
+                    {
+                        Error error = new Error("422", "END_DATE_BEFORE_START_DATE");
                         List<Error> errors = new ArrayList<>();
                         errors.add(error);
                         return new ResponseEntity<>(errors, HttpStatus.NOT_ACCEPTABLE);
@@ -134,6 +135,10 @@ public class InterviewServiceImpl implements InterviewService {
             errors.add(error);
             return new ResponseEntity<>(errors,HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        if(!validTimeZone(interview.getTimezone().getID()))
+        {
+            interview.setTimezone(TimeZone.getDefault());
+        }
         Candidate candidate = interview.getCandidate();
         candidateRepository.save(candidate);
         for (Timeslot e : interview.getTimeslots()) {
@@ -146,7 +151,7 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @PatchMapping
-    public ResponseEntity patchInterview(Interview interviewToAdd, String interviewID) {
+    public ResponseEntity<Object> patchInterview(Interview interviewToAdd, String interviewID) {
 
 
         try {
@@ -158,6 +163,7 @@ public class InterviewServiceImpl implements InterviewService {
             }
 
             if(interviewToAdd.getTimezone() != null){
+                System.out.println(interviewToAdd.getTimezone());
                 if (!validTimeZone(interviewToAdd.getTimezone().getID())) {
                     Error error = new Error("400", "INVALID TIMEZONE");
                     List<Error> errors = new ArrayList<>();
@@ -188,7 +194,7 @@ public class InterviewServiceImpl implements InterviewService {
 
 
     @Override
-    public ResponseEntity getAllInterviewers() {
+    public ResponseEntity<Object> getAllInterviewers() {
 
         List<Interview> interviewResponse = new ArrayList<>();
         try {
@@ -205,7 +211,7 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @Override
-    public ResponseEntity getInterview(String interview_ID) {
+    public ResponseEntity<Object> getInterview(String interview_ID) {
         try {
             if (interviewsInterface.findById(interview_ID).isEmpty()) {
                 Error error = new Error("404", "INTERVIEW NOT FOUND");
@@ -223,7 +229,7 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @Override
-    public ResponseEntity deleteInterview(String interview_ID) {
+    public ResponseEntity<Object> deleteInterview(String interview_ID) {
         try {
             if (interviewsInterface.findById(interview_ID).isEmpty()) {
                 Error error = new Error("404", "INTERVIEW NOT FOUND");
