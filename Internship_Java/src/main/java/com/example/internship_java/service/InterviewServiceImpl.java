@@ -24,11 +24,11 @@ public class InterviewServiceImpl implements InterviewService {
     InterviewerRepository interviewerRepository;
 
     final
-    InterviewsInterface interviewsInterface;
+    InterviewRepository interviewsInterface;
     final
     InterviewTypeRepository interviewTypeRepository;
 
-    public InterviewServiceImpl(CandidateRepository candidateRepository, TimeslotRepository timeslotRepository, InterviewerRepository interviewerRepository, InterviewsInterface interviewsInterface, InterviewTypeRepository interviewTypeRepository) {
+    public InterviewServiceImpl(CandidateRepository candidateRepository, TimeslotRepository timeslotRepository, InterviewerRepository interviewerRepository, InterviewRepository interviewsInterface, InterviewTypeRepository interviewTypeRepository) {
         this.candidateRepository = candidateRepository;
         this.timeslotRepository = timeslotRepository;
         this.interviewerRepository = interviewerRepository;
