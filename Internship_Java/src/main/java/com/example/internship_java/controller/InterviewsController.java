@@ -43,6 +43,7 @@ public class InterviewsController {
         return interviewService.getAllInterviewers();
     }
 
+
     @GetMapping(value = "/interviews/{interviewId}")
     public ResponseEntity getInterview(@PathVariable("interviewId") String interviewId)
     {
