@@ -1,5 +1,6 @@
 package com.example.internship_java.controller;
 
+import com.example.internship_java.response.InterviewTypeResponse;
 import com.example.internship_java.service.InterviewTypeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +17,17 @@ public class InterviewTypeController {
     }
 
     @GetMapping("/interview-types")
-    public ResponseEntity<Object> getAllInterviewTypes() {
+    public ResponseEntity<InterviewTypeResponse> getAllInterviewTypes() {
         return interviewTypeService.getInterviewTypes();
     }
 
     @PatchMapping("/interview-types")
-    public ResponseEntity<Object> patchInterviewTypes(@RequestBody String name) {
+    public ResponseEntity<InterviewTypeResponse> patchInterviewTypes(@RequestBody String name) {
         return interviewTypeService.patchInterviewType(name);
     }
 
     @DeleteMapping("/interview-types")
-    public ResponseEntity<Object> deleteInterviewType(@RequestParam String name) {
+    public ResponseEntity<InterviewTypeResponse> deleteInterviewType(@RequestParam String name) {
         return interviewTypeService.deleteInterviewType(name);
     }
 

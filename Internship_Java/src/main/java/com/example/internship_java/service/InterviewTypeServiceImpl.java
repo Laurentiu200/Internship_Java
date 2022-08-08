@@ -3,6 +3,7 @@ package com.example.internship_java.service;
 import com.example.internship_java.model.Error;
 import com.example.internship_java.model.InterviewType;
 import com.example.internship_java.repository.InterviewTypeRepository;
+import com.example.internship_java.response.InterviewTypeResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
@@ -23,13 +24,13 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
     }
 
     @Override
-    public ResponseEntity<Object> patchInterviewType(String name) {
+    public ResponseEntity<InterviewTypeResponse> patchInterviewType(String name) {
         try {
             if (interviewTypeRepository.count() > 1999) {
                 Error error = new Error("409", "INTERVIEW_TYPES_SIZE_EXCEEDED");
                 Collection<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+                return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.CONFLICT);
             }
             JsonArray convertedObject = new Gson().fromJson(name, JsonArray.class);
             Gson gson = new Gson();
@@ -39,19 +40,22 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
 
             for (String interviewType : newInterviewTypes) interviewTypeSet.add(new InterviewType(interviewType));
             interviewTypeRepository.saveAll(interviewTypeSet);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Error error = new Error("500", "UNEXPECTED_ERROR");
+            List<Error> errors = new ArrayList<>();
+            errors.add(error);
+            return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<Object> deleteInterviewType(String name) {
+    public ResponseEntity<InterviewTypeResponse> deleteInterviewType(String name) {
         try {
             if (interviewTypeRepository.findByName(name) != null) {
                 interviewTypeRepository.delete(interviewTypeRepository.findByName(name));
@@ -59,20 +63,29 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
                 Error error = new Error("404", "INTERVIEW_TYPE_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Error error = new Error("500", "UNEXPECTED_ERROR");
+            List<Error> errors = new ArrayList<>();
+            errors.add(error);
+            return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<Object> getInterviewTypes() {
+    public ResponseEntity<InterviewTypeResponse> getInterviewTypes() {
         try {
-            return new ResponseEntity<>(interviewTypeRepository.findAll(), HttpStatus.OK);
+            List<InterviewType> interviewTypes = interviewTypeRepository.findAll();
+            InterviewTypeResponse interviewTypeResponse = new InterviewTypeResponse(interviewTypes, null);
+            System.out.println(interviewTypeResponse.getInterviewTypes());
+            return new ResponseEntity<>(interviewTypeResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Error error = new Error("500", "UNEXPECTED_ERROR");
+            List<Error> errors = new ArrayList<>();
+            errors.add(error);
+            return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

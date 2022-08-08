@@ -1,5 +1,6 @@
 package com.example.internship_java.controller;
 
+import com.example.internship_java.response.StatusResponse;
 import com.example.internship_java.service.StatusServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +17,14 @@ public class StatusController {
     }
 
     @PutMapping(value = "/interviews/{interviewId}/candidate/status")
-    ResponseEntity<Object> putCandidateStatus
+    ResponseEntity<StatusResponse> putCandidateStatus
             (@PathVariable String interviewId,
              @RequestBody String statusValue) {
         return statusService.updateCandidateStatus(interviewId, statusValue);
     }
 
     @PutMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}/interviewers/{userId}/status")
-    ResponseEntity<Object> putInterviewerStatus
+    ResponseEntity<StatusResponse> putInterviewerStatus
             (@PathVariable String interviewId,
              @PathVariable String timeslotId,
              @PathVariable String userId,
