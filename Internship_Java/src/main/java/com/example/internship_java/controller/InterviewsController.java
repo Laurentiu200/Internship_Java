@@ -2,6 +2,7 @@ package com.example.internship_java.controller;
 
 import com.example.internship_java.model.Interview;
 import com.example.internship_java.repository.*;
+import com.example.internship_java.response.InterviewResponse;
 import com.example.internship_java.service.InterviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,31 +37,31 @@ public class InterviewsController {
 
 
     @GetMapping(value = "/interviews")
-    public ResponseEntity<Object> getInterviews()
+    public ResponseEntity<InterviewResponse> getInterviews()
     {
         return interviewService.getAllInterviewers();
     }
 
 
     @GetMapping(value = "/interviews/{interviewId}")
-    public ResponseEntity<Object> getInterview(@PathVariable("interviewId") String interviewId)
+    public ResponseEntity<InterviewResponse> getInterview(@PathVariable("interviewId") String interviewId)
     {
         return interviewService.getInterview(interviewId);
     }
 
     @DeleteMapping (value = "/interviews/{interviewId}")
-    public ResponseEntity<Object> deleteInterview(@PathVariable("interviewId") String interviewId)
+    public ResponseEntity<InterviewResponse> deleteInterview(@PathVariable("interviewId") String interviewId)
     {
         return interviewService.deleteInterview(interviewId);
     }
 
     @PostMapping(value = "/interviews",consumes = "application/json")
-    public ResponseEntity<Object> addTimeslot( @RequestBody Interview interviewToAdd){
+    public ResponseEntity<InterviewResponse> addTimeslot( @RequestBody Interview interviewToAdd){
         return interviewService.putInterview(interviewToAdd);
     }
 
     @PatchMapping(value = "interviews/{interviewID}", consumes = "application/json")
-    public ResponseEntity<Object> moddifyInterview(@PathVariable("interviewID") String interviewID, @RequestBody Interview interview)
+    public ResponseEntity<InterviewResponse> moddifyInterview(@PathVariable("interviewID") String interviewID, @RequestBody Interview interview)
     {
         System.out.println(interview.getTimezone());
         return interviewService.patchInterview(interview, interviewID);
