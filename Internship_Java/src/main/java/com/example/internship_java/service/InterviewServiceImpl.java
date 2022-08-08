@@ -3,6 +3,7 @@ package com.example.internship_java.service;
 import com.example.internship_java.model.*;
 import com.example.internship_java.model.Error;
 import com.example.internship_java.repository.*;
+import com.example.internship_java.response.InterviewResponse;
 import com.google.gson.JsonSyntaxException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Service
 public class InterviewServiceImpl implements InterviewService {
@@ -37,20 +38,6 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
 
-    private boolean checkInterviewer(Interviewer interviewer) {
-        return interviewerRepository.findById(interviewer.getId()).isPresent();
-    }
-
-    private boolean checkInterviewers(List<Timeslot> timeslot) {
-        AtomicInteger ok = new AtomicInteger();
-        timeslot.forEach(timeslot1 -> {
-            timeslot1.getInterviewers().forEach(interviewer -> {
-                if (checkInterviewer(interviewer))
-                    ok.set(1);
-            });
-        });
-        return ok.get() != 1;
-    }
 
     private void modifyInterview(Interview interview, String interviewID)
     {
@@ -75,65 +62,60 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @PostMapping
-    public ResponseEntity<Object> putInterview(Interview interview) {
+    public ResponseEntity<InterviewResponse> putInterview(Interview interview) {
+        List<Error> errors = new ArrayList<>();
         try {
             if (interviewsInterface.findById(interview.getId()).isPresent()) {
                 Error error = new Error("403", "INTERVIEW ALREADY EXIST");
-                List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.FORBIDDEN);
             }
 
             if(interview.getOrganizerId() == null) {
-                Error error = new Error("422", "ORGANIZER ID NOTFOUND");
-                List<Error> errors = new ArrayList<>();
+                Error error = new Error("422", "ORGANIZER ID NOT FOUND");
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NO_CONTENT);
             }
             if(!interview.getTimeslots().isEmpty())
             {
                 List<Timeslot> timeslots = interview.getTimeslots();
                 for(Timeslot e : timeslots)
                 {
+                    if(timeslotRepository.findById(e.getId()).isPresent()) {
+                        Error error = new Error("422", "TIMESLOT ALREADY EXIST");
+                        errors.add(error);
+                    }
                     if(e.getInterviewers().isEmpty()) {
                         Error error = new Error("422", "INTERVIEWERS NOT SET");
-                        List<Error> errors = new ArrayList<>();
                         errors.add(error);
-                        return new ResponseEntity<>(errors, HttpStatus.NOT_ACCEPTABLE);
                     }
                     if(e.getStartsOn().compareTo(e.getEndsOn()) > 0)
                     {
                         Error error = new Error("422", "END_DATE_BEFORE_START_DATE");
-                        List<Error> errors = new ArrayList<>();
                         errors.add(error);
-                        return new ResponseEntity<>(errors, HttpStatus.NOT_ACCEPTABLE);
                     }
                     if(e.getInterviewers().size() > 50) {
                         Error error = new Error("422", "INTERVIEWERS SIZE EXCEEDED");
-                        List<Error> errors = new ArrayList<>();
                         errors.add(error);
-                        return new ResponseEntity<>(errors, HttpStatus.NOT_ACCEPTABLE);
                     }
                 }
             }
 
             if(interview.getTimeslots().size() > 50) {
                 Error error = new Error("422", "TIMESLOTS SIZE EXCEEDED");
-                List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_ACCEPTABLE);
             }
+
+            if(!errors.isEmpty())
+                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.NOT_ACCEPTABLE);
 
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");
-            List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             Error error = new Error("500", "UNEXPECTED ERROR");
-            List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new InterviewResponse(errors,null),HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if(!validTimeZone(interview.getTimezone().getID()))
         {
@@ -147,56 +129,52 @@ public class InterviewServiceImpl implements InterviewService {
         }
         timeslotRepository.saveAll(interview.getTimeslots());
         interviewsInterface.save(interview);
-        return new ResponseEntity<>(interview,HttpStatus.CREATED);
+        Collection<Interview> interviews = new ArrayList<>();
+        interviews.add(interview);
+        return new ResponseEntity<>(new InterviewResponse(null, interviews),HttpStatus.CREATED);
     }
 
     @PatchMapping
-    public ResponseEntity<Object> patchInterview(Interview interviewToAdd, String interviewID) {
-
-
+    public ResponseEntity<InterviewResponse> patchInterview(Interview interviewToAdd, String interviewID) {
+        List<Error> errors = new ArrayList<>();
         try {
             if (interviewsInterface.findById(interviewID).isEmpty()) {
                 Error error = new Error("404", "INTERVIEW NOT FOUND");
-                List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.NOT_FOUND);
             }
 
             if(interviewToAdd.getTimezone() != null){
                 System.out.println(interviewToAdd.getTimezone());
                 if (!validTimeZone(interviewToAdd.getTimezone().getID())) {
                     Error error = new Error("400", "INVALID TIMEZONE");
-                    List<Error> errors = new ArrayList<>();
                     errors.add(error);
-                    return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+                    return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.CONFLICT);
                 }
             }
 
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");
-            List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             Error error = new Error("500", "UNEXPECTED ERROR");
-            List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new InterviewResponse(errors,null),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         modifyInterview(interviewToAdd, interviewID);
         Error error = new Error("204", "INTERVIEW UPDATED");
-        List<Error> errors = new ArrayList<>();
         errors.add(error);
-        return new ResponseEntity<>(errors, HttpStatus.CREATED);
+        return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.CREATED);
 
     }
 
 
     @Override
-    public ResponseEntity<Object> getAllInterviewers() {
+    public ResponseEntity<InterviewResponse> getAllInterviewers() {
 
-        List<Interview> interviewResponse = new ArrayList<>();
+        Collection<Interview> interviewResponse = new ArrayList<>();
         try {
             if (!interviewsInterface.findAll().isEmpty())
                 interviewResponse = interviewsInterface.findAll();
@@ -204,50 +182,64 @@ public class InterviewServiceImpl implements InterviewService {
             Error error = new Error("500", "Unexpected error");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new InterviewResponse(errors, null), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-        return new ResponseEntity<>(interviewResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(new InterviewResponse(null,interviewResponse), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<Object> getInterview(String interview_ID) {
+    public ResponseEntity<InterviewResponse> getInterview(String interview_ID) {
+
         try {
             if (interviewsInterface.findById(interview_ID).isEmpty()) {
                 Error error = new Error("404", "INTERVIEW NOT FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+
+                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             Error error = new Error("500", "Unexpected error");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(interviewsInterface.findById(interview_ID), HttpStatus.FOUND);
+        Collection<Interview> interviews = new ArrayList<>();
+        interviews.add(interviewsInterface.findById(interview_ID).get());
+
+        return new ResponseEntity<>(new InterviewResponse(null,interviews), HttpStatus.FOUND);
     }
 
     @Override
-    public ResponseEntity<Object> deleteInterview(String interview_ID) {
+    public ResponseEntity<InterviewResponse> deleteInterview(String interview_ID) {
         try {
             if (interviewsInterface.findById(interview_ID).isEmpty()) {
                 Error error = new Error("404", "INTERVIEW NOT FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             Error error = new Error("500", "Unexpected error");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        interviewsInterface.deleteById(interview_ID);
+        Interview interview;
+        interview = interviewsInterface.getById(interview_ID);
+        Candidate candidate = interview.getCandidate();
+        candidateRepository.delete(candidate);
+        for (Timeslot e : interview.getTimeslots()) {
+            interviewerRepository.deleteAll(e.getInterviewers());
+            interviewTypeRepository.delete(e.getInterviewType());
+        }
+        timeslotRepository.deleteAll(interview.getTimeslots());
+        interviewsInterface.delete(interview);
         Error error = new Error("204", "INTERVIEW WAS DELETED");
         List<Error> errors = new ArrayList<>();
         errors.add(error);
-        return new ResponseEntity<>(errors, HttpStatus.CREATED);
+        return new ResponseEntity<>(new InterviewResponse(errors, null), HttpStatus.CREATED);
     }
 
 

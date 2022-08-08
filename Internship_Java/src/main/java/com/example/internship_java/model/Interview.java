@@ -9,7 +9,7 @@ import java.util.TimeZone;
 public class Interview {
     @Id
     private String id;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "fk_candidate_id")
     private Candidate candidate;
     private String jobId;
