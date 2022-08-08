@@ -1,6 +1,7 @@
 package com.example.internship_java.controller;
 
 import com.example.internship_java.model.Timeslot;
+import com.example.internship_java.response.TimeslotResponse;
 import com.example.internship_java.service.TimeslotsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class TimeslotsController {
     }
 
     @PatchMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}", consumes = "application/json")
-    public ResponseEntity<Object> patchInterviewTypes
+    public ResponseEntity<TimeslotResponse> patchInterviewTypes
             (@PathVariable String interviewId,
              @PathVariable String timeslotId,
              @RequestBody Timeslot updateData) {
@@ -25,21 +26,21 @@ public class TimeslotsController {
     }
 
     @GetMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}")
-    public ResponseEntity<Object> getTimeslot
+    public ResponseEntity<TimeslotResponse> getTimeslot
             (@PathVariable String interviewId,
              @PathVariable String timeslotId) {
         return timeslotsService.getTimeslot(interviewId, timeslotId);
     }
 
     @PostMapping(value = "/interviews/{interviewId}/timeslots", consumes = "application/json")
-    public ResponseEntity<Object>addTimeslot
+    public ResponseEntity<TimeslotResponse>addTimeslot
             (@PathVariable String interviewId,
              @RequestBody Timeslot timeslotToAdd) {
         return timeslotsService.addTimeslot(interviewId, timeslotToAdd);
     }
 
     @DeleteMapping(value = "/interviews/{interviewId}/timeslots/{timeslotId}")
-    public ResponseEntity<Object> deleteTimeslot
+    public ResponseEntity<TimeslotResponse> deleteTimeslot
             (@PathVariable String interviewId,
              @PathVariable String timeslotId) {
         return timeslotsService.deleteTimeslot(interviewId, timeslotId);

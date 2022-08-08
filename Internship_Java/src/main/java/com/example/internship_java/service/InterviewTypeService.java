@@ -1,11 +1,12 @@
 package com.example.internship_java.service;
 
+import com.example.internship_java.response.InterviewTypeResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface InterviewTypeService {
-    ResponseEntity<Object> patchInterviewType(String name);
+    ResponseEntity<InterviewTypeResponse> patchInterviewType(String name);
 
-    ResponseEntity<Object> deleteInterviewType(String name);
+    ResponseEntity<InterviewTypeResponse> deleteInterviewType(String name);
 
-    ResponseEntity<Object> getInterviewTypes();
+    ResponseEntity<InterviewTypeResponse> getInterviewTypes();
 }

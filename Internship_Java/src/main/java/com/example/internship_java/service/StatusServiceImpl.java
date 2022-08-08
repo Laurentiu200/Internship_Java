@@ -5,6 +5,7 @@ import com.example.internship_java.model.Error;
 import com.example.internship_java.repository.CandidateRepository;
 import com.example.internship_java.repository.InterviewRepository;
 import com.example.internship_java.repository.InterviewerRepository;
+import com.example.internship_java.response.StatusResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -33,7 +34,7 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public ResponseEntity<Object> updateCandidateStatus(String interviewId, String statusValue) {
+    public ResponseEntity<StatusResponse> updateCandidateStatus(String interviewId, String statusValue) {
         try {
             JsonObject convertedObject = new Gson().fromJson(statusValue, JsonObject.class);
             String status = convertedObject.get("status").getAsString();
@@ -48,26 +49,29 @@ public class StatusServiceImpl implements StatusService {
                     Error error = new Error("404", "CANDIDATE_NOT_FOUND");
                     List<Error> errors = new ArrayList<>();
                     errors.add(error);
-                    return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.NOT_FOUND);
                 }
             } else {
                 Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.NOT_FOUND);
             }
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Error error = new Error("500", "UNEXPECTED_ERROR");
+            List<Error> errors = new ArrayList<>();
+            errors.add(error);
+            return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public ResponseEntity<Object> updateInterviewerStatus(String interviewId, String timeslotId, String userId, String statusValue) {
+    public ResponseEntity<StatusResponse> updateInterviewerStatus(String interviewId, String timeslotId, String userId, String statusValue) {
         try {
             JsonObject convertedObject = new Gson().fromJson(statusValue, JsonObject.class);
             String status = convertedObject.get("status").getAsString();
@@ -87,7 +91,7 @@ public class StatusServiceImpl implements StatusService {
                     Error error = new Error("404", "TIMESLOT_NOT_FOUND");
                     List<Error> errors = new ArrayList<>();
                     errors.add(error);
-                    return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+                    return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.FORBIDDEN);
                 }
                 List<Interviewer> interviewerList = timeslotToSearch.getInterviewers();
                 found = 0;
@@ -103,7 +107,7 @@ public class StatusServiceImpl implements StatusService {
                     Error error = new Error("404", "NON_EXISTING_INTERVIEWERS");
                     List<Error> errors = new ArrayList<>();
                     errors.add(error);
-                    return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.NOT_FOUND);
                 }
                 interviewerToUpdate.setStatus(AttendeeStatusValue.valueOf(status));
                 interviewerRepository.save(interviewerToUpdate);
@@ -112,16 +116,19 @@ public class StatusServiceImpl implements StatusService {
                 Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
                 errors.add(error);
-                return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.NOT_FOUND);
 
             }
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
-            return new ResponseEntity<>(errors, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            Error error = new Error("500", "UNEXPECTED_ERROR");
+            List<Error> errors = new ArrayList<>();
+            errors.add(error);
+            return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
