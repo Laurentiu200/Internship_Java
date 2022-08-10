@@ -2,11 +2,14 @@ package com.example.internship_java.response;
 
 import com.example.internship_java.model.Error;
 import com.example.internship_java.model.Timeslot;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collection;
 
 public class TimeslotResponse {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Timeslot timeslot;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Collection<Error> errors;
 
     public TimeslotResponse(Timeslot timeslot, Collection<Error> errors) {

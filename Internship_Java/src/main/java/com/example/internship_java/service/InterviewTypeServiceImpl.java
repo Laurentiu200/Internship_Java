@@ -2,7 +2,9 @@ package com.example.internship_java.service;
 
 import com.example.internship_java.model.Error;
 import com.example.internship_java.model.InterviewType;
+import com.example.internship_java.model.Timeslot;
 import com.example.internship_java.repository.InterviewTypeRepository;
+import com.example.internship_java.repository.TimeslotRepository;
 import com.example.internship_java.response.InterviewTypeResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -18,9 +20,12 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
 
     final
     InterviewTypeRepository interviewTypeRepository;
+    final
+    TimeslotRepository timeslotRepository;
 
-    public InterviewTypeServiceImpl(InterviewTypeRepository interviewTypeRepository) {
+    public InterviewTypeServiceImpl(InterviewTypeRepository interviewTypeRepository, TimeslotRepository timeslotRepository) {
         this.interviewTypeRepository = interviewTypeRepository;
+        this.timeslotRepository = timeslotRepository;
     }
 
     @Override
@@ -58,6 +63,14 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
     public ResponseEntity<InterviewTypeResponse> deleteInterviewType(String name) {
         try {
             if (interviewTypeRepository.findByName(name) != null) {
+                for(Timeslot t: timeslotRepository.findAll())
+                    if(t.getInterviewType().getName().equals(name)){
+                        Error error = new Error("409", "INTERVIEW_TYPE_IS_REFERRED");
+                        List<Error> errors = new ArrayList<>();
+                        errors.add(error);
+                        return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.NOT_FOUND);
+                    }
+
                 interviewTypeRepository.delete(interviewTypeRepository.findByName(name));
             } else {
                 Error error = new Error("404", "INTERVIEW_TYPE_NOT_FOUND");
