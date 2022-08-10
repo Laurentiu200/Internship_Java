@@ -56,12 +56,12 @@ public class InterviewsController {
     }
 
     @PostMapping(value = "/interviews",consumes = "application/json")
-    public ResponseEntity<InterviewResponse> addTimeslot( @RequestBody Interview interviewToAdd){
+    public ResponseEntity<InterviewResponse> addInterview( @RequestBody Interview interviewToAdd){
         return interviewService.putInterview(interviewToAdd);
     }
 
     @PatchMapping(value = "interviews/{interviewID}", consumes = "application/json")
-    public ResponseEntity<InterviewResponse> moddifyInterview(@PathVariable("interviewID") String interviewID, @RequestBody Interview interview)
+    public ResponseEntity<InterviewResponse> modifyInterview(@PathVariable("interviewID") String interviewID, @RequestBody Interview interview)
     {
         System.out.println(interview.getTimezone());
         return interviewService.patchInterview(interview, interviewID);
