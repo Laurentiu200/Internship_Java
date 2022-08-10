@@ -87,10 +87,13 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 int found = 0;
                 for (Timeslot e : timeslotList) {
                     if (e.getId().equals(timeslotId)) {
-                        interviewerRepository.deleteAll(e.getInterviewers());
-                        timeslotList.remove(e);
+                        List<Interviewer> interviewers = e.getInterviewers();
+                        InterviewType interviewType = e.getInterviewType();
+                        e.setInterviewers(null);
                         timeslotRepository.delete(e);
-                        interviewTypeRepository.delete(e.getInterviewType());
+                        interviewTypeRepository.delete(interviewType);
+                        interviewerRepository.deleteAll(interviewers);
+                        timeslotList.remove(e);
                         found = 1;
                         break;
                     }
@@ -106,6 +109,7 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 return new ResponseEntity<>(new TimeslotResponse(null, errors), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            System.out.println(e);
             Error error = new Error("500", "UNEXPECTED_ERROR");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
