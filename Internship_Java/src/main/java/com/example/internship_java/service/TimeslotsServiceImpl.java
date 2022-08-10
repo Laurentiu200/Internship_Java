@@ -109,7 +109,6 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 return new ResponseEntity<>(new TimeslotResponse(null, errors), HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            System.out.println(e);
             Error error = new Error("500", "UNEXPECTED_ERROR");
             List<Error> errors = new ArrayList<>();
             errors.add(error);
