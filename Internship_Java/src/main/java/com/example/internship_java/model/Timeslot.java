@@ -18,7 +18,7 @@ public class Timeslot {
     private String place;
     private String startsOn;
     private String endsOn;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_interviewers_id")
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
@@ -42,6 +42,11 @@ public class Timeslot {
     }
 
     public Timeslot() {
+    }
+
+    public void  removeInterviewer(Interviewer interviewer)
+    {
+        interviewers.remove(interviewer);
     }
 
     public String getId() {

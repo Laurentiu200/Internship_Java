@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.sql.Time;
 import java.util.*;
 
 
@@ -41,7 +42,7 @@ public class InterviewServiceImpl implements InterviewService {
 
     private void modifyInterview(Interview interview, String interviewID)
     {
-        Interview new_interview = interviewsInterface.getById(interviewID);
+        Interview new_interview = interviewsInterface.findById(interviewID).get();
         if(interview.getCandidate().getStatus() != null) {
             new_interview.getCandidate().setStatus(interview.getCandidate().getStatus());
         }
@@ -125,6 +126,8 @@ public class InterviewServiceImpl implements InterviewService {
         candidateRepository.save(candidate);
         for (Timeslot e : interview.getTimeslots()) {
             interviewerRepository.saveAll(e.getInterviewers());
+            if(interviewTypeRepository.findByName(e.getInterviewType().getName()) != null)
+                e.setInterviewType(interviewTypeRepository.findByName(e.getInterviewType().getName()));
             interviewTypeRepository.save(e.getInterviewType());
         }
         timeslotRepository.saveAll(interview.getTimeslots());
@@ -227,15 +230,23 @@ public class InterviewServiceImpl implements InterviewService {
             return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Interview interview;
-        interview = interviewsInterface.getById(interview_ID);
+        interview = interviewsInterface.findById(interview_ID).get();
         Candidate candidate = interview.getCandidate();
-        candidateRepository.delete(candidate);
-        for (Timeslot e : interview.getTimeslots()) {
-            interviewerRepository.deleteAll(e.getInterviewers());
-            interviewTypeRepository.delete(e.getInterviewType());
-        }
-        timeslotRepository.deleteAll(interview.getTimeslots());
+        List<Timeslot> timeslot = interview.getTimeslots();
         interviewsInterface.delete(interview);
+        candidateRepository.delete(candidate);
+        for(Timeslot t : timeslot) {
+            List<Interviewer> interviewers = t.getInterviewers();
+            InterviewType interviewType = t.getInterviewType();
+            t.setInterviewers(null);
+            timeslotRepository.delete(t);
+            interviewerRepository.deleteAll(interviewers);
+            interviewTypeRepository.delete(interviewType);
+        }
+
+
+
+
         Error error = new Error("204", "INTERVIEW WAS DELETED");
         List<Error> errors = new ArrayList<>();
         errors.add(error);
