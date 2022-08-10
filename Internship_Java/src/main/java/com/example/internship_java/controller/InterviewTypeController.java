@@ -26,9 +26,11 @@ public class InterviewTypeController {
         return interviewTypeService.patchInterviewType(name);
     }
 
-    @DeleteMapping("/interview-types/{interview-types}")
-    public ResponseEntity<InterviewTypeResponse> deleteInterviewType(@PathVariable("interview-types") String name) {
-        return interviewTypeService.deleteInterviewType(name);
+
+    @DeleteMapping("/interview-types/{interviewType}")
+    public ResponseEntity<InterviewTypeResponse> deleteInterviewType(@PathVariable String interviewType) {
+        return interviewTypeService.deleteInterviewType(interviewType);
+
     }
 
 }
