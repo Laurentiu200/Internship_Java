@@ -66,11 +66,6 @@ public class InterviewServiceImpl implements InterviewService {
     public ResponseEntity<InterviewResponse> putInterview(Interview interview) {
         List<Error> errors = new ArrayList<>();
         try {
-            if (interviewsInterface.findById(interview.getId()).isPresent()) {
-                Error error = new Error("403", "INTERVIEW ALREADY EXIST");
-                errors.add(error);
-                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.FORBIDDEN);
-            }
 
             if(interview.getOrganizerId() == null) {
                 Error error = new Error("422", "ORGANIZER ID NOT FOUND");
@@ -81,10 +76,6 @@ public class InterviewServiceImpl implements InterviewService {
                 List<Timeslot> timeslots = interview.getTimeslots();
                 for(Timeslot e : timeslots)
                 {
-                    if(timeslotRepository.findById(e.getId()).isPresent()) {
-                        Error error = new Error("422", "TIMESLOT ALREADY EXIST");
-                        errors.add(error);
-                    }
                     if(e.getInterviewers().isEmpty()) {
                         Error error = new Error("422", "INTERVIEWERS NOT SET");
                         errors.add(error);
@@ -240,7 +231,9 @@ public class InterviewServiceImpl implements InterviewService {
             InterviewType interviewType = t.getInterviewType();
             t.setInterviewers(null);
             timeslotRepository.delete(t);
-            interviewerRepository.deleteAll(interviewers);
+            for(Interviewer in: interviewers)
+                if(timeslotRepository.findTimeslotByInterviewers(in).isEmpty())
+                    interviewerRepository.delete(in);
             interviewTypeRepository.delete(interviewType);
         }
         Error error = new Error("204", "INTERVIEW WAS DELETED");

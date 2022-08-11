@@ -1,5 +1,7 @@
 package com.example.internship_java.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.TimeZone;
 @Entity
 public class Interview {
     @Id
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
     @ManyToOne
     @JoinColumn(name = "fk_candidate_id")

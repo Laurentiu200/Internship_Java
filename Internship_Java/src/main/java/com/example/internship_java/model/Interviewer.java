@@ -1,8 +1,7 @@
 package com.example.internship_java.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "interviewer")
@@ -10,6 +9,7 @@ public class Interviewer {
     @Id
     private String id;
     AttendeeStatusValue status;
+
 
     public Interviewer() {
     }
