@@ -40,11 +40,7 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
             JsonArray convertedObject = new Gson().fromJson(name, JsonArray.class);
             Gson gson = new Gson();
             String[] newInterviewTypes = gson.fromJson(convertedObject, String[].class);
-            List<InterviewType> interviewTypeList = interviewTypeRepository.findAll();
-            Set<InterviewType> interviewTypeSet = new HashSet<>(interviewTypeList);
-
-            for (String interviewType : newInterviewTypes) interviewTypeSet.add(new InterviewType(interviewType));
-            interviewTypeRepository.saveAll(interviewTypeSet);
+            for (String interviewType : newInterviewTypes) interviewTypeRepository.save(new InterviewType(interviewType));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (JsonSyntaxException e) {
             Error error = new Error("422", "BAD_INPUT");

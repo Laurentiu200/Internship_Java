@@ -88,11 +88,12 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 for (Timeslot e : timeslotList) {
                     if (e.getId().equals(timeslotId)) {
                         List<Interviewer> interviewers = e.getInterviewers();
-                        InterviewType interviewType = e.getInterviewType();
                         e.setInterviewers(null);
                         timeslotRepository.delete(e);
-                        interviewTypeRepository.delete(interviewType);
-                        interviewerRepository.deleteAll(interviewers);
+                        for(Interviewer in: interviewers)
+                            if(timeslotRepository.findTimeslotByInterviewers(in).isEmpty()) {
+                                interviewerRepository.delete(in);
+                            }
                         timeslotList.remove(e);
                         found = 1;
                         break;

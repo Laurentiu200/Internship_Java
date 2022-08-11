@@ -6,13 +6,12 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "interviewType")
 public class InterviewType {
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @JsonIgnore
     private String id;
     @Column(name = "name")
@@ -22,6 +21,7 @@ public class InterviewType {
     }
 
     public InterviewType(String name) {
+        this.id= UUID.nameUUIDFromBytes(name.getBytes()).toString();
         this.name = name;
     }
 
