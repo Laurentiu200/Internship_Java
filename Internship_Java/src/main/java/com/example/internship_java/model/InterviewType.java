@@ -22,7 +22,6 @@ public class InterviewType {
     }
 
     public InterviewType(String name) {
-        this.id = id;
         this.name = name;
     }
 

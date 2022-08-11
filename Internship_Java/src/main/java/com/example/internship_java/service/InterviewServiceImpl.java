@@ -243,10 +243,6 @@ public class InterviewServiceImpl implements InterviewService {
             interviewerRepository.deleteAll(interviewers);
             interviewTypeRepository.delete(interviewType);
         }
-
-
-
-
         Error error = new Error("204", "INTERVIEW WAS DELETED");
         List<Error> errors = new ArrayList<>();
         errors.add(error);
