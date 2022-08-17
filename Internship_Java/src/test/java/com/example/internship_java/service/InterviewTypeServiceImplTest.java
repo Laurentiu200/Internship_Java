@@ -8,7 +8,6 @@ import com.example.internship_java.repository.TimeslotRepository;
 import com.example.internship_java.response.InterviewTypeResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -131,6 +130,7 @@ class InterviewTypeServiceImplTest {
         interviewTypes.add(interviewType1);
 
         when(interviewTypeRepository.findAll()).thenReturn(interviewTypes);
+
 
        assertEquals(new ResponseEntity<>(HttpStatus.OK).getStatusCode(), interviewTypeService.getInterviewTypes().getStatusCode());
        assertEquals(interviewTypes, interviewTypeService.getInterviewTypes().getBody().getInterviewTypes());
