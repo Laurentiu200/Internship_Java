@@ -25,6 +25,7 @@ public class TimeslotsServiceImpl implements TimeslotsService {
     InterviewerRepository interviewerRepository;
     final
     InterviewTypeRepository interviewTypeRepository;
+    private TimeslotRepository timeslotRepository1;
 
     public TimeslotsServiceImpl(InterviewRepository interviewRepository, TimeslotRepository timeslotRepository, InterviewerRepository interviewerRepository, InterviewTypeRepository interviewTypeRepository) {
         this.interviewRepository = interviewRepository;
@@ -103,6 +104,7 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                     Error error = new Error("404", "TIMESLOT_NOT_FOUND");
                     errors.add(error);}
                 interviewRepository.save(interviewOptional.get());
+
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 Error error = new Error("404", "INTERVIEW_NOT_FOUND");

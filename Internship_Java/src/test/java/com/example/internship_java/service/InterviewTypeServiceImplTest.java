@@ -5,7 +5,6 @@ import com.example.internship_java.repository.InterviewTypeRepository;
 import com.example.internship_java.response.InterviewTypeResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,9 +48,10 @@ class InterviewTypeServiceImplTest {
         interviewTypes.add(interviewType1);
         interviewTypes.add(interviewType2);
         interviewTypes.add(interviewType3);
-   //     when(interviewTypeServiceInterface.getInterviewTypes()).thenReturn(new ResponseEntity<>(new InterviewTypeResponse(interviewTypes,null),HttpStatus.OK));
+        System.out.println(interviewTypes);
+      //when(interviewTypeServiceInterface.getInterviewTypes()).thenReturn(new ResponseEntity<>(new InterviewTypeResponse(interviewTypes,null),HttpStatus.OK));
 
-        when(interviewTypeRepository.findAll()).thenReturn(interviewTypes);
+       when(interviewTypeRepository.findAll()).thenReturn(interviewTypes);
         //when(interviewTypeServiceInterface.getInterviewTypes()).thenReturn(new ResponseEntity<>(new InterviewTypeResponse(interviewTypes,null),HttpStatus.OK));
         InterviewTypeResponse interviewTypeResponse = new InterviewTypeResponse(interviewTypes,null);
         ResponseEntity<InterviewTypeResponse> responseEntity = new ResponseEntity<>(interviewTypeResponse, HttpStatus.OK);

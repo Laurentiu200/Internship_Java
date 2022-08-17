@@ -4,14 +4,11 @@ import com.example.internship_java.model.*;
 import com.example.internship_java.model.Error;
 import com.example.internship_java.repository.*;
 import com.example.internship_java.response.InterviewResponse;
-import com.google.gson.JsonSyntaxException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.sql.Time;
 import java.util.*;
 
 
@@ -40,7 +37,7 @@ public class InterviewServiceImpl implements InterviewService {
 
 
 
-    private void modifyInterview(Interview interview, String interviewID)
+    protected void modifyInterview(Interview interview, String interviewID)
     {
         Interview new_interview = interviewsInterface.findById(interviewID).get();
         if(interview.getCandidate().getStatus() != null) {
@@ -100,19 +97,12 @@ public class InterviewServiceImpl implements InterviewService {
             if(!errors.isEmpty())
                 return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.NOT_ACCEPTABLE);
 
-        } catch (JsonSyntaxException e) {
-            Error error = new Error("422", "BAD_INPUT");
-            errors.add(error);
-            return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.FORBIDDEN);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             Error error = new Error("500", "UNEXPECTED ERROR");
             errors.add(error);
             return new ResponseEntity<>(new InterviewResponse(errors,null),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if(!validTimeZone(interview.getTimezone().getID()))
-        {
-            interview.setTimezone(TimeZone.getDefault());
-        }
+
         Candidate candidate = interview.getCandidate();
         candidateRepository.save(candidate);
         for (Timeslot e : interview.getTimeslots()) {
@@ -135,22 +125,16 @@ public class InterviewServiceImpl implements InterviewService {
             if (interviewsInterface.findById(interviewID).isEmpty()) {
                 Error error = new Error("404", "INTERVIEW NOT FOUND");
                 errors.add(error);
-                return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new InterviewResponse(errors, null), HttpStatus.NOT_FOUND);
             }
 
-            if(interviewToAdd.getTimezone() != null){
-                System.out.println(interviewToAdd.getTimezone());
-                if (!validTimeZone(interviewToAdd.getTimezone().getID())) {
+            if (interviewToAdd.getTimezone() == null) {
+
                     Error error = new Error("400", "INVALID TIMEZONE");
                     errors.add(error);
-                    return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.CONFLICT);
-                }
+                    return new ResponseEntity<>(new InterviewResponse(errors, null), HttpStatus.CONFLICT);
             }
 
-        } catch (JsonSyntaxException e) {
-            Error error = new Error("422", "BAD_INPUT");
-            errors.add(error);
-            return new ResponseEntity<>(new InterviewResponse(errors,null), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             Error error = new Error("500", "UNEXPECTED ERROR");
             errors.add(error);
@@ -179,7 +163,7 @@ public class InterviewServiceImpl implements InterviewService {
             return new ResponseEntity<>(new InterviewResponse(errors, null), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-        return new ResponseEntity<>(new InterviewResponse(null,interviewResponse), HttpStatus.CREATED);
+        return new ResponseEntity<>(new InterviewResponse(null,interviewResponse), HttpStatus.OK);
     }
 
     @Override
