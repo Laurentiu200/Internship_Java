@@ -64,7 +64,7 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
                         Error error = new Error("409", "INTERVIEW_TYPE_IS_REFERRED");
                         List<Error> errors = new ArrayList<>();
                         errors.add(error);
-                        return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>(new InterviewTypeResponse(null, errors), HttpStatus.CONFLICT);
                     }
 
                 interviewTypeRepository.delete(interviewTypeRepository.findByName(name));
@@ -88,7 +88,6 @@ public class InterviewTypeServiceImpl implements InterviewTypeService {
         try {
             List<InterviewType> interviewTypes = interviewTypeRepository.findAll();
             InterviewTypeResponse interviewTypeResponse = new InterviewTypeResponse(interviewTypes, null);
-            System.out.println(interviewTypeResponse.getInterviewTypes());
             return new ResponseEntity<>(interviewTypeResponse, HttpStatus.OK);
         } catch (Exception e) {
             Error error = new Error("500", "UNEXPECTED_ERROR");
