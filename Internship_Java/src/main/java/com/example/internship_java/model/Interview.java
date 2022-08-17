@@ -28,7 +28,8 @@ public class Interview {
     private String refUrl;
     private String source;
 
-    public Interview( Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeslots, String createdOn, String refUrl, String source) {
+    public Interview(Candidate candidate, String jobId, String location, String organizerId, TimeZone timezone, List<Timeslot> timeslots, String createdOn, String refUrl, String source) {
+
         this.candidate = candidate;
         this.jobId = jobId;
         this.organizerId = organizerId;

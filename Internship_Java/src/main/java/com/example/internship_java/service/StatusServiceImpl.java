@@ -91,7 +91,7 @@ public class StatusServiceImpl implements StatusService {
                     Error error = new Error("404", "TIMESLOT_NOT_FOUND");
                     List<Error> errors = new ArrayList<>();
                     errors.add(error);
-                    return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.FORBIDDEN);
+                    return new ResponseEntity<>(new StatusResponse(errors), HttpStatus.NOT_FOUND);
                 }
                 List<Interviewer> interviewerList = timeslotToSearch.getInterviewers();
                 found = 0;

@@ -14,7 +14,6 @@ public class Timeslot {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-
     @OneToOne
     @JoinColumn(name = "fk_interviu_type_id")
     private InterviewType interviewType;
@@ -25,15 +24,6 @@ public class Timeslot {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Interviewer> interviewers = new ArrayList<>(50);
 
-    public Timeslot(String id, InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {
-        this.id = id;
-        this.interviewType = interviewType;
-        this.title = title;
-        this.place = place;
-        this.startsOn = startsOn;
-        this.endsOn = endsOn;
-        this.interviewers = interviewers;
-    }
 
     public Timeslot(InterviewType interviewType, String title, String place, String startsOn, String endsOn, List<Interviewer> interviewers) {
         this.interviewType = interviewType;

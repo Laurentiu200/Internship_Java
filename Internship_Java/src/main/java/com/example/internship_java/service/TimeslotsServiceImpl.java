@@ -58,7 +58,7 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 timeslotRepository.save(timeslotToAdd);
                 interviewOptional.get().setTimeslots(timeslots);
                 interviewRepository.save(interviewOptional.get());
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(new TimeslotResponse(timeslotToAdd,null), HttpStatus.OK);
             } else {
                 Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
@@ -89,12 +89,17 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 for (Timeslot e : timeslotList) {
                     if (e.getId().equals(timeslotId)) {
                         List<Interviewer> interviewers = e.getInterviewers();
+                        InterviewType interviewType = e.getInterviewType();
                         e.setInterviewers(null);
                         timeslotRepository.delete(e);
-                        for(Interviewer in: interviewers)
-                            if(timeslotRepository.findTimeslotByInterviewers(in).isEmpty()) {
+                        if(timeslotRepository.findTimeslotByInterviewType(interviewType).isEmpty()){
+                            interviewTypeRepository.delete(interviewType);
+                        }
+                        for(Interviewer in: interviewers) {
+                            if (timeslotRepository.findTimeslotByInterviewers(in).isEmpty()) {
                                 interviewerRepository.delete(in);
                             }
+                        }
                         timeslotList.remove(e);
                         found = 1;
                         break;
@@ -102,10 +107,13 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 }
                 if (found == 0) {
                     Error error = new Error("404", "TIMESLOT_NOT_FOUND");
-                    errors.add(error);}
+                    errors.add(error);
+                    return new ResponseEntity<>(new TimeslotResponse(null, errors), HttpStatus.NOT_FOUND);
+                }
                 interviewRepository.save(interviewOptional.get());
 
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
             } else {
                 Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 errors.add(error);
@@ -177,7 +185,7 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 }
                 for (Interviewer interviewer : updatedTimeslot.getInterviewers()) {
                     if (interviewerRepository.findById(interviewer.getId()).isEmpty()) {
-                        Error error = new Error("422", "NON_EXISTING_INTERVIEWERS");
+                        Error error = new Error("404", "NON_EXISTING_INTERVIEWERS");
                         List<Error> errors = new ArrayList<>();
                         errors.add(error);
                         return new ResponseEntity<>(new TimeslotResponse(null, errors), HttpStatus.NOT_FOUND);
@@ -198,7 +206,7 @@ public class TimeslotsServiceImpl implements TimeslotsService {
                 timeslotRepository.save(updatedTimeslot);
                 interviewOptional.get().setTimeslots(timeslotList);
                 interviewRepository.save(interviewOptional.get());
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
                 Error error = new Error("404", "INTERVIEW_NOT_FOUND");
                 List<Error> errors = new ArrayList<>();
